@@ -11,7 +11,29 @@ if (!token || !clientId) {
 }
 
 const commands = [
-  new SlashCommandBuilder().setName('ping').setDescription('Replies with Pong!'),
+  new SlashCommandBuilder()
+    .setName('ask')
+    .setDescription('Ask the AI a question')
+    .addStringOption(o => o.setName('prompt').setDescription('Your question').setRequired(true)),
+  new SlashCommandBuilder()
+    .setName('test')
+    .setDescription('Simple health check: confirms the bot is responding')
+  ,
+  new SlashCommandBuilder()
+    .setName('image')
+    .setDescription('Generate a local image from a prompt (Automatic1111)')
+    .addStringOption(o => o.setName('prompt').setDescription('Image prompt').setRequired(true))
+    .addIntegerOption(o => o.setName('width').setDescription('Width (e.g., 512)'))
+    .addIntegerOption(o => o.setName('height').setDescription('Height (e.g., 512)'))
+    .addIntegerOption(o => o.setName('steps').setDescription('Steps (e.g., 25)'))
+    .addNumberOption(o => o.setName('cfg').setDescription('CFG scale (e.g., 7)'))
+    .addStringOption(o => o.setName('sampler').setDescription('Sampler name'))
+    .addStringOption(o => o.setName('negative').setDescription('Negative prompt'))
+  ,
+  new SlashCommandBuilder()
+    .setName('video')
+    .setDescription('Generate a local video from a prompt (requires custom local API)')
+    .addStringOption(o => o.setName('prompt').setDescription('Video prompt').setRequired(true))
 ].map((cmd) => cmd.toJSON());
 
 const rest = new REST({ version: '10' }).setToken(token);
