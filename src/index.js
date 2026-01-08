@@ -1,6 +1,8 @@
-import 'dotenv/config';
+import './utils/envLoader.js';
+import './utils/logger.js';
 import { Client, GatewayIntentBits, Events } from 'discord.js';
 import { generateAIResponse } from './aiClient.js';
+import { getChatHistory, addToHistory } from './utils/chatHistory.js';
 
 // Guard: ensure token present before trying to log in.
 if (!process.env.DISCORD_TOKEN) {
@@ -27,8 +29,6 @@ client.once(Events.ClientReady, (c) => {
 
 // State for concurrency and memory
 let isBusy = false;
-const chatHistory = []; // Stores { role, content } objects
-const HISTORY_LIMIT = 20; // Last 10 interactions (user + bot = 2 messages per interaction)
 
 // Handle slash command interactions ("/ping")
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -50,17 +50,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
         
         // Prepare messages: history + current prompt
         // Note: System prompt is prepended in generateAIResponse
-        const messages = [...chatHistory, { role: 'user', content: userContent }];
+        const messages = [...getChatHistory(), { role: 'user', content: userContent }];
         
         const answer = await generateAIResponse(messages);
         
         // Update history
-        chatHistory.push({ role: 'user', content: userContent });
-        chatHistory.push({ role: 'assistant', content: answer });
-        // Keep only last 10 interactions
-        if (chatHistory.length > HISTORY_LIMIT) {
-             chatHistory.splice(0, chatHistory.length - HISTORY_LIMIT);
-        }
+        addToHistory(userContent, answer);
 
         // Truncate extremely long answers for safety
         const MAX_LEN = 1900; // Discord message limit buffer
