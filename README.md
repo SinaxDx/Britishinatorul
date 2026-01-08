@@ -118,5 +118,3 @@ Removing a command: delete its builder from the array and re-register.
 - Add conversation memory (store recent turns per channel).
 - Add moderation filters for prompts.
 - Add rate limiting per user.
-
-Enjoy building! Offline AI, full control, minimal surface area.
