@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import OpenAI from 'openai';
+import config from './utils/configLoader.js';
 
 // Basic wrapper around OpenAI Chat Completions.
 // Handles minimal validation & allows system prompt override via env.
@@ -14,9 +15,10 @@ if (baseURL) {
   client = new OpenAI({ apiKey, baseURL });
 }
 
-const DEFAULT_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
-const MAX_TOKENS = parseInt(process.env.AI_MAX_TOKENS || '400', 10);
-const SYSTEM_PROMPT = process.env.AI_SYSTEM_PROMPT || 'You are a helpful assistant.';
+// Configs from botConfig.json (with env fallback handled in loader)
+const DEFAULT_MODEL = config.performance.model;
+const MAX_TOKENS = config.performance.maxTokens;
+const SYSTEM_PROMPT = config.personality.systemPrompt;
 
 export async function generateAIResponse(messagesOrPrompt) {
   if (!client) {

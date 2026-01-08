@@ -1,0 +1,10 @@
+{
+  "performance": {
+    "model": "llama3",
+    "maxTokens": 256,
+    "historyLimit": 20
+  },
+  "personality": {
+    "systemPrompt": "Answer quickly and accurately and add additional informations when truly needed. Also rarely squeeze in some british jokes or accent."
+  }
+}

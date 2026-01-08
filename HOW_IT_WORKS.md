@@ -10,7 +10,7 @@ Britishinatorul is a NodeJS-based Discord bot designed to serve as a polite and 
 
 ### 1. AI Integration
 The bot uses the `openai` NPM package to communicate with a local AI server.
--   **Model**: Currently configured to use `claude-haiku-4.5`.
+-   **Model**: Configurable via `.env` (default: `claude-haiku-4.5` or `llama3`).
 -   **Persona**: The system prompt defines the bot as a "polite and refined British assistant who is helpful, concise, and charming."
 -   **Memory**: The bot maintains a short-term memory of the last **20 messages** (10 user queries + 10 bot responses). This allows for conversational continuity.
 -   **Context**: Each user prompt is prefixed with the user's username (e.g., `User Anton: Hello`) so the AI knows who it is talking to.
@@ -35,7 +35,11 @@ The bot uses Discord's Slash Command (`/`) system.
 -   **`src/index.js`**: The main entry point.
     -   Initializes the Discord Client.
     -   Handles the `InteractionCreate` event.
-    -   Manages the `chatHistory` array and `isBusy` state.
+    -   Manages the bot "Busy" state.
+-   **`src/utils/`**: Helper modules to keep the code clean.
+    -   **`envLoader.js`**: Robustly loads environment variables, handling Windows/Path issues.
+    -   **`logger.js`**: Replaces the default console logging with a dual-system (console + persistent file log in `logs/`).
+    -   **`chatHistory.js`**: Manages the persistent chat history array (adding messages, trimming to limit).
 -   **`src/aiClient.js`**: A wrapper for the OpenAI API.
     -   Constructs the message payload (System Prompt + History + User Prompt).
     -   Handles errors and offline states.
@@ -43,18 +47,41 @@ The bot uses Discord's Slash Command (`/`) system.
 -   **`.env`**: Configuration file for secrets and settings.
 -   **`start_all.bat`**: A simple Windows batch script to start the bot via `npm start`.
 
-## Configuration (`.env`)
+## Logging
 
-The bot behavior is highly customizable via the `.env` file:
+The bot features a comprehensive logging system.
+-   **Console**: Live output is shown in the terminal.
+-   **File**: All output (INFO, ERROR, DEBUG) is mirrored to timestamped files in the `logs/` directory (e.g., `logs/session-2026-01-08....log`).
+-   **Startup Logs**: `start_all.bat` also captures early startup errors to `logs/console_....log`.
 
-| Variable | Description | Default |
-| :--- | :--- | :--- |
-| `DISCORD_TOKEN` | Your Discord Bot Token | (Required) |
-| `DISCORD_CLIENT_ID` | Your Application ID | (Required) |
-| `OPENAI_BASE_URL` | URL of the local AI provider | `http://localhost:11434/v1` |
-| `OPENAI_MODEL` | The model ID to request | `claude-haiku-4.5` |
-| `AI_MAX_TOKENS` | Max tokens for AI response | `256` |
-| `AI_SYSTEM_PROMPT` | The persona definition | Polite British Assistant |
+## Configuration
+
+Configuration is split into two files:
+
+1.  **`.env`**: For sensitive connection details.
+2.  **`botConfig.json`**: For behavior and performance tuning.
+
+### `.env` (Secrets)
+| Variable | Description |
+| :--- | :--- |
+| `DISCORD_TOKEN` | Your Discord Bot Token |
+| `DISCORD_CLIENT_ID` | Your Application ID |
+| `OPENAI_BASE_URL` | URL of the local AI provider (`http://localhost:11434/v1`) |
+
+### `botConfig.json` (Performance & Behavior)
+Located in the root folder, this file allows easy editing of:
+```json
+{
+  "performance": {
+    "model": "llama3",       // The AI model to use
+    "maxTokens": 256,        // Shorter = faster response
+    "historyLimit": 20       // How many past messages to remember
+  },
+  "personality": {
+    "systemPrompt": "..."    // Define how the bot acts
+  }
+}
+```
 
 ## Setup & Usage
 

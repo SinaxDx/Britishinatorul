@@ -1,5 +1,8 @@
+import config from './configLoader.js';
+
 const chatHistory = [];
-const HISTORY_LIMIT = 20; // Last 10 interactions (user + bot = 2 messages per interaction)
+// Use the configured limit
+const HISTORY_LIMIT = config.performance.historyLimit; 
 
 /**
  * Returns a copy of the current chat history.
