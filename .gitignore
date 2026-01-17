@@ -10,6 +10,7 @@ yarn-error.log*
 # Logs
 logs
 *.log
+chatHistory.json
 
 # OS
 .DS_Store
